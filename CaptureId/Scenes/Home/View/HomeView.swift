@@ -56,7 +56,7 @@ struct HomeView: View {
                 case .match:
                     MatchView()
                 case .settings:
-                    SettingsView()
+                    CameraCaptureView()
                 }
             }
         }
