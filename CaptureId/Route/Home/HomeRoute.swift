@@ -11,4 +11,5 @@ enum HomeRoute: String, Hashable, Codable {
     case consult
     case match
     case settings
+    case photoList
 }

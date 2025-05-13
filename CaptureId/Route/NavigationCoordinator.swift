@@ -24,8 +24,6 @@ final class NavigationCoordinator: ObservableObject {
     }
 }
 
-
-
 private struct NavigationCoordinatorKey: EnvironmentKey {
     static let defaultValue = NavigationCoordinator()
 }

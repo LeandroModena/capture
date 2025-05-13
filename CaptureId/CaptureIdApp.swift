@@ -28,8 +28,11 @@ struct CaptureIdApp: App {
                             ConsultView()
                         case .match:
                             MatchView()
+                                .environment(\.navigation, coordinator)
                         case .settings:
                             SettingsView()
+                        case .photoList:
+                            PhotosGridView()
                         }
                     }
             }
