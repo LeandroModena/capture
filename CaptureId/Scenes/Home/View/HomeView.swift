@@ -10,6 +10,7 @@ import SwiftUI
 struct HomeView: View {
     
     @StateObject private var viewModel = HomeViewModel()
+    @Environment(\.navigation) private var navigation
     
     let columns: [GridItem] = [
         GridItem(.flexible()),
@@ -17,7 +18,7 @@ struct HomeView: View {
     ]
     
     var body: some View {
-        NavigationStack(path: $viewModel.path) {
+        
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 20) {
                     ForEach(viewModel.cards) { card in
@@ -40,27 +41,14 @@ struct HomeView: View {
                         .cornerRadius(16)
                         .shadow(radius: 4)
                         .onTapGesture {
-                            viewModel.navigate(to: card.route)
+                            navigation.navigate(to: card.route)
                         }
                     }
                 }
                 .padding()
             }
             .navigationTitle("Home")
-            .navigationDestination(for: HomeRoute.self) { route in
-                switch route {
-                case .capture:
-                    CaptureView()
-                case .consult:
-                    ConsultView()
-                case .match:
-                    MatchView()
-                case .settings:
-                    CameraCaptureView()
-                }
-            }
         }
-    }
 }
 
 #Preview {

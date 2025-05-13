@@ -8,7 +8,6 @@
 import SwiftUI
 
 final class HomeViewModel: ObservableObject {
-    @Published var path: [HomeRoute] = []
     
     let cards: [CardHome] = [
         CardHome(title: "Captura Facial", icon: "faceid", color: .blue, route: .capture),
@@ -16,8 +15,4 @@ final class HomeViewModel: ObservableObject {
         CardHome(title: "Matching", icon: "person.2.square.stack", color: .yellow, route: .match),
         CardHome(title: "Configurações", icon: "gearshape", color: .red, route: .settings)
     ]
-    
-    func navigate(to route: HomeRoute) {
-        path.append(route)
-    }
 }
