@@ -9,26 +9,24 @@ import SwiftUI
 import AVFoundation
 
 class CaptureViewModel: ObservableObject {
-    @Published var identifier: String = ""
-    @Published var cameraPermissionDenied = false
+    @Published var authorized = false
+    @Published var permissionChecked = false
 
     func iniciarCaptura() {
-        //switch AVCaptureDevice.authorizationStatus(for: .video) {
-       // case .authorized:
-            //openCamera()
-       // case .notDetermined:
-         //   AVCaptureDevice.requestAccess(for: .video) { granted in
-         //       DispatchQueue.main.async {
-            //        if granted {
-                        //self.openCamera()
-         //           } else {
-         //               self.cameraPermissionDenied = true
-        //            }
-       //         }
-     //       }
-      //  default:
-     //       cameraPermissionDenied = true
-      //  }
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized:
+            authorized = true
+            permissionChecked = true
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { granted in
+                DispatchQueue.main.async {
+                    self.authorized = granted
+                    self.permissionChecked = true
+                }
+            }
+        default:
+            authorized = false
+            permissionChecked = true
+        }
     }
 }
-
