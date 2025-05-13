@@ -23,6 +23,7 @@ struct CaptureIdApp: App {
                                 .environment(\.navigation, coordinator)
                         case .captureCamera:
                             CameraCaptureView()
+                                .environment(\.navigation, coordinator)
                         case .consult:
                             ConsultView()
                         case .match:

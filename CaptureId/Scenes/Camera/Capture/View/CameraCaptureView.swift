@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CameraCaptureView: View {
     @StateObject private var viewModel = CameraViewModel()
+    @Environment(\.navigation) private var navigation
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -26,6 +27,9 @@ struct CameraCaptureView: View {
             }
         }
         .navigationBarTitle("Captura", displayMode: .inline)
+        .onChange(of: viewModel.shouldDismiss) {
+            navigation.goBack()
+        }
         .onAppear {
             viewModel.configure()
         }

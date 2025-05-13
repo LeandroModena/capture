@@ -11,10 +11,16 @@ import SwiftUI
 class CameraViewModel: NSObject, ObservableObject {
     let session = AVCaptureSession()
     private var photoOutput = AVCapturePhotoOutput()
-    
+
+    @Published var capturedImage: UIImage?
+    @Published var savedImageURL: URL?
+    @Published var shouldDismiss = false
+
+
     func configure() {
         DispatchQueue.global(qos: .userInitiated).async {
             self.session.beginConfiguration()
+            self.session.sessionPreset = .photo
             
             guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front),
                   let input = try? AVCaptureDeviceInput(device: device),
@@ -36,7 +42,7 @@ class CameraViewModel: NSObject, ObservableObject {
             self.session.startRunning()
         }
     }
-    
+
     func captureImage() {
         let settings = AVCapturePhotoSettings()
         DispatchQueue.global(qos: .userInitiated).async {
@@ -49,7 +55,7 @@ class CameraViewModel: NSObject, ObservableObject {
             self.photoOutput.capturePhoto(with: settings, delegate: self)
         }
     }
-    
+
     func stopSession() {
         DispatchQueue.global(qos: .userInitiated).async {
             if self.session.isRunning {
@@ -57,6 +63,42 @@ class CameraViewModel: NSObject, ObservableObject {
             }
         }
     }
+
+    private func saveImageToAppDirectory(_ image: UIImage) {
+        guard let data = image.jpegData(compressionQuality: 0.9) else {
+            print("Falha ao converter UIImage para JPEG")
+            return
+        }
+
+        let folderName = "capture_images"
+        let fileName = UUID().uuidString + ".jpg"
+
+        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let folderURL = documentsURL.appendingPathComponent(folderName)
+
+        if !FileManager.default.fileExists(atPath: folderURL.path) {
+            do {
+                try FileManager.default.createDirectory(at: folderURL, withIntermediateDirectories: true, attributes: nil)
+            } catch {
+                print("Erro ao criar diretório \(folderName): \(error)")
+                return
+            }
+        }
+
+        let fileURL = folderURL.appendingPathComponent(fileName)
+
+        do {
+            try data.write(to: fileURL)
+            DispatchQueue.main.async {
+                self.savedImageURL = fileURL
+                self.shouldDismiss = true
+                print("Imagem salva com sucesso em: \(fileURL)")
+            }
+        } catch {
+            print("Erro ao salvar imagem: \(error)")
+        }
+    }
+
 }
 
 extension CameraViewModel: AVCapturePhotoCaptureDelegate {
@@ -75,8 +117,9 @@ extension CameraViewModel: AVCapturePhotoCaptureDelegate {
         }
         
         DispatchQueue.main.async {
-            // self.capturedImage = image
-            print("Foto capturada com sucesso")
+            self.capturedImage = image
         }
+
+        saveImageToAppDirectory(image)
     }
 }
